@@ -84,17 +84,16 @@ async function start() {
     try {
         await createRedisClient(process.env.REDIS_URL || 'redis://localhost:6379');
         logger.info('Redis connected and verified');
-
-        server.listen(PORT, '0.0.0.0', () => {
-            logger.info({ port: PORT }, 'WebRTC server running');
-            logger.info('Security features: enabled');
-            logger.info('Rate limiting: enabled');
-            logger.info('Trust proxy: enabled');
-        });
     } catch (err) {
-        logger.fatal({ err }, 'Failed to start server');
-        process.exit(1);
+        logger.warn({ err: err.message || err }, 'Redis connection failed - starting server without Redis caching');
     }
+
+    server.listen(PORT, '0.0.0.0', () => {
+        logger.info({ port: PORT }, 'WebRTC server running');
+        logger.info('Security features: enabled');
+        logger.info('Rate limiting: enabled');
+        logger.info('Trust proxy: enabled');
+    });
 }
 
 start();

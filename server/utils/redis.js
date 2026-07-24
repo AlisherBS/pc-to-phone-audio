@@ -5,13 +5,30 @@ const logger = require('./logger');
 let redisClient;
 
 async function createRedisClient(url) {
-    redisClient = redis.createClient({ url });
+    redisClient = redis.createClient({
+        url,
+        socket: {
+            reconnectStrategy: (retries) => {
+                if (retries > 2) {
+                    return new Error('Redis max reconnect attempts reached');
+                }
+                return 500;
+            }
+        }
+    });
 
-    redisClient.on('error', (err) => logger.error({ err }, 'Redis error'));
+    redisClient.on('error', (err) => {
+        // Log cleanly without verbose stack trace on ECONNREFUSED
+        logger.warn({ msg: err.message || err }, 'Redis connection warning');
+    });
     redisClient.on('connect', () => logger.info('Redis connected'));
 
-    await redisClient.connect();
-    await redisClient.ping(); // Verify connection
+    try {
+        await redisClient.connect();
+        await redisClient.ping(); // Verify connection
+    } catch (err) {
+        logger.warn('Redis not available on startup - operating in memory/SQLite mode');
+    }
     return redisClient;
 }
 
