@@ -30,7 +30,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || 'username' }}/webrtc-audio-streamer
+          images: ${{ secrets.DOCKERHUB_USERNAME || 'alisherbs' }}/pc-to-phone-audio
           tags: |
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
             type=semver,pattern={{version}}

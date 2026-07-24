@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: webrtc-audio-streamer:latest
-    container_name: webrtc-audio-streamer
+    image: alisherbs/pc-to-phone-audio:latest
+    container_name: pc-to-phone-audio
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -23,7 +23,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: webrtc-audio-redis
+    container_name: pc-to-phone-audio-redis
     restart: unless-stopped
     volumes:
       - redis-data:/data
