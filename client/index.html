@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream PC Sound to Phone - No Install (Wireless Headphones)</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Hear computer audio on your phone instantly. Perfect for VDI/Citrix work, watching movies at night, or if speakers are broken. Free & No App needed.">
+    <meta name="keywords"
+        content="pc to phone audio, wireless speaker app, stream system audio, remote desktop sound, webrtc audio streamer, sound from pc to android, audio mirroring, web speakers, no install audio streamer">
+    <meta name="author" content="Audio Streamer">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="./" />
+    <link rel="alternate" hreflang="en" href="./?lang=en" />
+    <link rel="alternate" hreflang="ru" href="./?lang=ru" />
+    <link rel="alternate" hreflang="x-default" href="./" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Turn Phone into Wireless PC Speaker">
+    <meta property="og:description"
+        content="Stream computer audio to your phone instantly. No app installation required. Works with Movies, Games, and Remote Desktops.">
+    <meta property="og:image" content="og-image.png">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="ru_RU">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Audio Streamer - PC to Phone Sound">
+    <meta name="twitter:description"
+        content="Free web tool to use your phone as computer speakers. Zero install. Low latency.">
+    <meta name="twitter:image" content="og-image.png">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Audio Streamer",
+        "alternateName": ["WebRTC System Audio Cast", "Virtual Audio Cable Web"],
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Windows, macOS, Linux, Android, iOS",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "description": "Turn your phone into wireless headphones for PC. Real-time audio streaming via browser. No software installation required.",
+        "featureList": [
+            "Real-time audio streaming",
+            "Cross-platform",
+            "No-install (Browser-based)",
+            "VDI/RDP Audio Support"
+        ],
+        "availableLanguage": ["en", "ru"],
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "350"
+        }
+    }
+    </script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function (m, e, t, r, i, k, a) {
+            m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+            m[i].l = 1 * new Date();
+            for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+            k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106536156', 'ym');
+
+        ym(106536156, 'init', { ssr: true, webvisor: true, clickmap: true, ecommerce: "dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true });
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/106536156" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
+    <!-- Google Analytics with Consent Mode -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('consent', 'default', {
+            'analytics_storage': 'denied',
+            'ad_storage': 'denied'
+        });
+
+        gtag('js', new Date());
+        gtag('config', 'G-2FHTDVDR19');
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2FHTDVDR19"></script>
+
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Social & Payment Auth Scripts -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+    <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+</head>
+
+
+    <!-- MOBILE AUDIO FIX - Play overlay -->
+    <div class="play-overlay" id="playOverlay">
+        <p>Tap to enable audio</p>
+        <button onclick="enableAudio()">Play Audio</button>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div class="cookie-consent" id="cookieConsent">
+        <div class="cookie-content">
+            <div>
+                <strong data-i18n="cookie_title">Cookie Consent</strong>
+                <p data-i18n="cookie_message">We use cookies to improve your experience and analyze site usage. By
+                    clicking "Accept", you consent to our use of cookies.</p>
+            </div>
+            <div class="cookie-buttons">
+                <button class="btn-secondary" onclick="rejectCookies()" data-i18n="cookie_reject">Reject</button>
+                <button class="btn-primary" onclick="acceptCookies()" data-i18n="cookie_accept">Accept</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-controls">
+                <select class="lang-switcher" id="langSwitcher" onchange="changeLang()">
+                    <option value="en">EN</option>
+                    <option value="ru">RU</option>
+                </select>
+                <div class="user-badge" id="userBadge" onclick="showAuthModal()">
+                    Login
+                </div>
+            </div>
+            <h1>Audio Streamer</h1>
+            <p data-i18n="subtitle" style="white-space: pre-line;">Turn your phone into a wireless speaker for your
+                computer.
+                Stream system audio, movies, and VDI sound instantly via browser.
+                Low latency, free, no app required.
+                Only Google Chrome or Chrome based browser support (Brave, Chromium and etc.)
+            </p>
+        </header>
+
+        <main>
+            <!-- Freemium / Subscription Section on Main Page -->
+            <div class="info-box" id="premiumUpsell" style="background: linear-gradient(135deg, #111 0%, #050505 100%); border: 1px solid rgba(255,215,0,0.2); border-radius: 16px; color: #fff; text-align: left; padding: 25px;">
+                <div style="text-align: center;">
+                    <h3 style="color: #ffd700; margin-bottom: 10px; font-size: 1.4rem; font-weight: 700;" data-i18n="freemium_title">Freemium -- Audio Streamer</h3>
+                    <p style="color: var(--fg-dim); font-size: 0.95rem; max-width: 600px; margin: 0 auto 20px;" data-i18n="freemium_desc">We operate on a freemium model to keep the platform self-sustaining while remaining free and accessible for quick basic sessions.</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <!-- Free Tier Card -->
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px;">
+                        <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 8px;" data-i18n="freemium_free_tier">Free Tier</div>
+                        <p style="color: var(--fg-dim); font-size: 0.9rem; line-height: 1.5;" data-i18n="freemium_free_desc">15-minute temporary sessions, 1 receiver limit.</p>
+                    </div>
+
+                    <!-- Premium Tier Card -->
+                    <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; padding: 18px;">
+                        <div style="font-weight: 700; color: #ffd700; font-size: 1.1rem; margin-bottom: 8px;" data-i18n="freemium_premium_tier">Premium Tier</div>
+                        <p style="color: #eee; font-size: 0.9rem; line-height: 1.5;" data-i18n="freemium_premium_desc">Unlimited streaming duration, multiple receivers, custom room passwords, permanent room IDs, priority support.</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <div style="display: inline-block; background: rgba(255,215,0,0.1); color: #ffd700; font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; margin-bottom: 15px;" data-i18n="freemium_trial_badge">First 7 days free trial available on Premium plans!</div>
+                    <br>
+                    <button class="btn-premium" onclick="showPremiumModal()" style="width: auto; padding: 12px 30px; background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #000; border-radius: 100px; font-weight: 700; font-size: 1.05rem; cursor: pointer; border: none;" data-i18n="freemium_btn">Upgrade to Premium (First 7 days free)</button>
+                </div>
+            </div>
+
+            <!-- APP INTERFACE AT THE TOP -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="sender" data-i18n="tab_sender">Broadcast (Send)</button>
+                <button class="tab-btn" data-tab="receiver" data-i18n="tab_receiver">Listen (Receive)</button>
+            </div>
+
+            <div class="tab-content active" id="sender-tab">
+                <div class="info-box">
+                    <span data-i18n="sender_info">I want to Stream Sound from this device (e.g. PC).</span>
+                </div>
+
+                <div id="premiumOptions" style="display: none; margin-bottom: 15px; background: rgba(255,215,0,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,215,0,0.1); text-align: left;">
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 5px; text-transform: uppercase;">Room Password (Optional)</label>
+                        <input type="password" id="roomPassword" data-i18n-placeholder="room_password" placeholder="Room password (optional)" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff;">
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                        <input type="checkbox" id="customRoomIdCb" style="width: auto;">
+                        <label for="customRoomIdCb" style="font-size: 0.9rem; cursor: pointer;">Use Permanent Room ID</label>
+                    </div>
+                    
+                    <div id="customRoomIdGroup" style="display: none;">
+                        <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 5px; text-transform: uppercase;">Select Your Permanent Room</label>
+                        <select id="customRoomId" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer;">
+                            <option value="">-- No rooms found --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="btnStartSender" data-i18n="start_streaming">Start Streaming</button>
+                <button class="btn-danger" id="btnStopSender" style="display: none;" data-i18n="stop_streaming">Stop
+                    Streaming</button>
+
+                <div id="senderInfo" style="display: none;">
+                    <div class="room-display">
+                        <div style="text-align: center; color: var(--fg-dim); margin-bottom: 10px;"
+                            data-i18n="room_id_label">
+                            Room ID:</div>
+                        <div class="room-id" id="roomIdDisplay"></div>
+                        <div style="text-align: center; color: var(--fg-dim); margin-top: 10px; font-size: 0.9rem;">
+                            <span data-i18n="connected">Connected</span>: <strong><span
+                                    id="receiverCount">0</span></strong> / <span id="maxReceivers">1</span>
+                        </div>
+                        <button class="btn-secondary" id="btnCopyRoom"
+                            style="width: auto; margin-top: 20px; font-size: 0.8rem; padding: 10px 20px;"
+                            data-i18n="copy_id">Copy ID</button>
+                    </div>
+
+                    <div id="qrcode"></div>
+
+                    <div class="card">
+                        <h3 data-i18n="audio_viz">Audio Visualization</h3>
+                        <div class="visualizer" id="visualizer">
+                            <!-- 20 bars -->
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sender Debug Panel -->
+                    <div class="card" style="margin-top: 20px; border: 1px solid var(--border); padding: 15px;">
+                        <h3 style="font-size: 1rem; margin-bottom: 10px;" data-i18n="debug_sender_title">Debug Info
+                            (Sender)</h3>
+                        <div id="senderDebugStats"
+                            style="font-family: monospace; font-size: 0.8rem; line-height: 1.5; color: var(--fg-dim);">
+                            <div><span data-i18n="debug_peers">Peers</span>: <span id="debugSenderPeers">0</span></div>
+                            <div><span data-i18n="debug_total_bitrate">Total Bitrate</span>: <span
+                                    id="debugSenderBitrate">0 kbps</span></div>
+                            <div><span data-i18n="debug_total_packets">Total Packets</span>: <span
+                                    id="debugSenderPackets">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="receiver-tab">
+                <div class="info-box">
+                    <span data-i18n="receiver_info">I want to Listen on this device (e.g. Phone).</span>
+                </div>
+
+                <label for="roomInput" style="display: none;">Room ID</label>
+                <input type="text" id="roomInput" data-i18n-placeholder="room_id_input"
+                    placeholder="Enter Room ID (e.g. A1B2C3)" autocomplete="off" autocorrect="off"
+                    autocapitalize="characters" spellcheck="false" aria-label="Enter Room ID to connect">
+
+                <input type="password" id="receiverPassword" data-i18n-placeholder="password_if_required"
+                    placeholder="Password (if required)" style="display: none;">
+                <button class="btn-primary" id="btnStartReceiver" data-i18n="connect">Connect</button>
+                <button class="btn-danger" id="btnStopReceiver" style="display: none;"
+                    data-i18n="disconnect">Disconnect</button>
+
+                <div id="receiverInfo" style="display: none;">
+                    <div class="card">
+                        <h3 data-i18n="playback_control">Playback Control</h3>
+                        <div class="volume-control">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="color: var(--fg-dim); font-size: 0.9rem;" data-i18n="volume">Volume</span>
+                                <span style="color: var(--fg); font-weight: 600;"><span
+                                        id="volumeValue">100</span>%</span>
+                            </div>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="100"
+                                style="padding: 0; height: 4px; margin: 0;">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 data-i18n="audio_viz">Audio Visualization</h3>
+                        <div class="visualizer" id="visualizerReceiver">
+                            <!-- 20 bars -->
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                        <button id="btnManualAudio" class="btn-primary" style="display: none; margin-top: 15px;"
+                            onclick="enableAudio()" data-i18n="play_audio">Play Audio</button>
+                    </div>
+
+                    <!-- Debug Panel -->
+                    <div class="card" style="margin-top: 20px; border: 1px solid var(--border); padding: 15px;">
+                        <h3 style="font-size: 1rem; margin-bottom: 10px;" data-i18n="debug_title">Debug Info</h3>
+                        <div id="debugStats"
+                            style="font-family: monospace; font-size: 0.8rem; line-height: 1.5; color: var(--fg-dim);">
+                            <div>Status: <span id="debugConnection" style="color: var(--fg);">Disconnected</span></div>
+                            <div>ICE State: <span id="debugIce" style="color: var(--fg);">New</span></div>
+                            <div>Type: <span id="debugType" style="color: var(--primary);">N/A</span></div>
+                            <div>RTT: <span id="debugRTT" style="color: var(--fg);">0 ms</span></div>
+                            <div>Track: <span id="debugTrack" style="color: var(--fg);">Wait</span></div>
+                            <div>Bitrate: <span id="debugBitrate">0 kbps</span></div>
+                            <div>Jitter: <span id="debugJitter">0 ms</span></div>
+                            <div>Buffer: <span id="debugBuffer">0 ms</span></div>
+                            <div>Packets: <span id="debugPackets">0</span></div>
+                            <div>Loss: <span id="debugLoss">0%</span></div>
+                        </div>
+
+                        <!-- Rest of Debug Panel -->
+                        <div id="debugRelayNote"
+                            style="display: none; margin-top: 10px; padding: 8px; background: rgba(255,193,7,0.1); border-left: 2px solid #ffc107; font-size: 0.75rem; color: #ffc107;">
+                        </div>
+
+                        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+                            <label style="display: block; font-size: 0.75rem; color: var(--fg-dim); margin-bottom: 5px;"
+                                data-i18n="buffer_control">Buffer Target: <span id="bufferValue">0</span>ms</label>
+                            <input type="range" id="bufferSlider" min="0" max="2000" step="50" value="0"
+                                style="width: 100%; height: 4px; border-radius: 2px; appearance: none; background: rgba(255,255,255,0.1); outline: none; cursor: pointer;">
+                            <p style="font-size: 0.65rem; color: var(--fg-dim); margin-top: 4px;"
+                                data-i18n="buffer_hint">Higher = More stable, more lag</p>
+                        </div>
+
+                        <details style="margin-top: 10px; font-size: 0.75rem; color: var(--fg-dim); cursor: pointer;">
+                            <summary style="outline: none;" data-i18n="debug_expl_header">Meanings:</summary>
+                            <ul style="list-style: none; margin-top: 5px; padding-left: 5px;">
+                                <li data-i18n="debug_expl_ice">• ICE: Connection status. "Connected" is good.</li>
+                                <li data-i18n="debug_expl_track">• Track: "Recv" = Audio arriving.</li>
+                                <li data-i18n="debug_expl_bitrate">• Bitrate: 0 = No data.</li>
+                            </ul>
+                        </details>
+
+                        <p style="font-size: 0.8rem; margin-top: 10px; color: var(--fg-dim);">
+                            If you have issues, send screenshot to: <a href="https://t.me/theflowski" target="_blank"
+                                style="color: var(--accent);">t.me/theflowski</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Session Timer (visible during streaming/listening for free users) -->
+            <div id="sessionTimer" style="display: none; align-items: center; justify-content: center; flex-direction: column; gap: 6px; padding: 12px 20px; background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 12px; margin-bottom: 15px; transition: all 0.3s ease;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span id="sessionTimerText" style="color: #ffd700; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700;">Free session: 15:00</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #aaa; text-align: center;" data-i18n="session_timer_hint">Free users can stream up to 15 minutes. Get Premium for unlimited streaming.</div>
+            </div>
+
+            <div class="card" style="text-align: center; border: none; background: transparent;">
+                <span class="status-badge disconnected" id="statusBadge" data-i18n="status_disconnected">Not
+                    Connected</span>
+                <div id="statusText" style="color: var(--fg-dim); font-size: 0.9rem;" data-i18n="waiting">Waiting
+                    for connection...</div>
+            </div>
+
+            <!-- HOW TO START SECTION -->
+            <div class="card" style="border: 1px solid var(--border); margin-top: 20px;">
+                <h3 data-i18n="how_to_title" style="margin-bottom: 15px;">How to Connect in 3 Steps</h3>
+                <div style="font-size: 0.9rem; color: var(--fg-dim); line-height: 1.6;">
+                    <p data-i18n="step_1" style="margin-bottom: 10px;">1. Open this page on your <b>Computer</b> and
+                        click <b>Start Streaming</b>.</p>
+                    <p data-i18n="step_2" style="margin-bottom: 10px;">2. <b>CRITICAL:</b> Select "Entire Screen" and
+                        check the box <b>"Also share system audio"</b> (bottom-left).</p>
+                    <p data-i18n="step_3">3. Scan the QR code with your <b>Phone</b> to start listening instantly.</p>
+                </div>
+            </div>
+
+            <!-- INFO SECTIONS AT THE BOTTOM -->
+            <div class="info-section">
+                <h3 data-i18n="about_title">About</h3>
+                <p data-i18n="about_desc" style="color: var(--fg-dim); margin-bottom: 30px; line-height: 1.6;">
+                    Audio Streamer lets you stream system audio from one device to another in real time using
+                    WebRTC.
+                    It’s perfect for watching movies, listening to music, or working in environments where
+                    installing
+                    software is not possible — all directly from your browser.
+                </p>
+
+                <div class="features-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎬</div>
+                        <strong data-i18n="feat_movies">Night Cinema</strong>
+                        <p data-i18n="feat_movies_desc"
+                            style="font-size: 0.9rem; color: var(--fg-dim); margin-top: 10px;">Watch on PC, listen
+                            on phone with headphones.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏢</div>
+                        <strong data-i18n="feat_vdi">Remote Work / VDI</strong>
+                        <p data-i18n="feat_vdi_desc" style="font-size: 0.9rem; color: var(--fg-dim); margin-top: 10px;">
+                            Audio from remote
+                            desktops and VMs.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔊</div>
+                        <strong data-i18n="feat_no_install">No-Install Utility</strong>
+                        <p data-i18n="feat_no_install_desc"
+                            style="font-size: 0.9rem; color: var(--fg-dim); margin-top: 10px;">
+                            Use phone as PC speaker replacement.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section" id="faqSection">
+                <h3 data-i18n="faq_title">FAQ</h3>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-i18n="faq_banner_q1">How to Stream All Audio</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-i18n="faq_banner_a1"
+                            style="font-size: 0.9rem; color: var(--fg-dim); white-space: pre-line;">
+                            1. Click Start Streaming.
+                            2. Select Entire Screen.
+                            3. Enable “Also share system audio”.
+                            4. Click Share.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-i18n="faq_banner_q">Chrome Extension</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-i18n="faq_banner_a"
+                            style="font-size: 0.9rem; color: var(--fg-dim); margin-bottom: 20px;">
+                            Avoid security banners with our lightweight extension.
+                        </p>
+                        <a href="/extension.zip" class="btn-secondary" style="display: inline-flex; width: auto;"
+                            download data-i18n="download_title">Download .zip</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="modal" id="authModal">
+        <div class="modal-content" style="text-align: center;">
+            <button class="modal-close" onclick="closeAuthModal()" aria-label="Close modal">&times;</button>
+            <h2 data-i18n="auth_title" style="margin-bottom: 15px;">Sign in</h2>
+            
+            <p data-i18n="auth_desc" style="color: var(--fg-dim); margin-bottom: 30px; line-height: 1.5; font-size: 0.95rem;">
+                Sign in with your Google account to manage your subscriptions and settings.
+            </p>
+
+            <div class="social-buttons" style="display: flex; flex-direction: column; gap: 10px; align-items: center; margin-bottom: 10px;">
+                <div id="googleSignInBtn"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="premiumModal">
+        <div class="modal-content" style="max-width: 720px;">
+            <button class="modal-close" onclick="closePremiumModal()" aria-label="Close modal">&times;</button>
+            <h2><span data-i18n="premium_features">Premium Features</span></h2>
+            <div style="margin: 20px 0; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <p><strong><span data-i18n="free">Free</span>:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--fg-dim);">
+                    <li data-i18n="free_1">1 receiver</li>
+                    <li data-i18n="free_2">Temporary rooms (15 minutes)</li>
+                </ul>
+
+                <p><strong><span data-i18n="premium">Premium: Unlock advanced features:</span></strong></p>
+                <ul style="margin-left: 20px; color: #ffd700;">
+                    <li data-i18n="premium_1">Multiple receivers</li>
+                    <li data-i18n="premium_2">Password-protected room</li>
+                    <li data-i18n="premium_3">Permanent room IDs</li>
+                    <li data-i18n="premium_4">Priority support</li>
+                </ul>
+
+                <!-- Auth Section (Shown when NOT logged in) -->
+                <div id="premiumAuthSection" style="display: none; text-align: center; margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+                    <h3 style="color: #fff; margin-bottom: 15px;" data-i18n="auth_to_continue">Sign in to continue</h3>
+                    <p style="color: var(--fg-dim); font-size: 0.9rem; margin-bottom: 20px;" data-i18n="auth_desc_premium">Please sign in with your Google account to purchase and manage subscriptions.</p>
+                    <div style="display: flex; justify-content: center;">
+                        <div id="googleSignInBtnPremium"></div>
+                    </div>
+                </div>
+
+                <!-- Plans Section (Shown when logged in) -->
+                <div id="premiumPlansSection" style="display: none; margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 15px;">
+                    <!-- 1 Month -->
+                    <div style="padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 10px;">1 Month</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 15px;">$9.99</div>
+                        </div>
+                        <div id="paypal-button-container-1mo"></div>
+                    </div>
+                    <!-- 3 Months + Trial -->
+                    <div style="padding: 15px; background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); border-radius: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #ffd700; color: #000; font-size: 0.7rem; font-weight: 800; padding: 2px 10px; border-radius: 4px; white-space: nowrap;">FIRST 7 DAYS FREE</div>
+                        <div>
+                            <div style="font-size: 0.8rem; color: #ffd700; text-transform: uppercase; margin-bottom: 10px; margin-top: 5px;">3 Months</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 5px;">$24.00</div>
+                            <div style="font-size: 0.8rem; color: #ffd700; margin-bottom: 15px;">$8.00 / month</div>
+                        </div>
+                        <div id="paypal-button-container-3mo"></div>
+                    </div>
+                    <!-- 12 Months + Trial -->
+                    <div style="padding: 15px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #ffd700; color: #000; font-size: 0.7rem; font-weight: 800; padding: 2px 10px; border-radius: 4px; white-space: nowrap;">BEST VALUE (7 DAYS FREE)</div>
+                        <div>
+                            <div style="font-size: 0.8rem; color: #ffd700; text-transform: uppercase; margin-bottom: 10px; margin-top: 5px;">12 Months</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 5px;">$72.00</div>
+                            <div style="font-size: 0.8rem; color: #ffd700; margin-bottom: 15px;">$6.00 / month</div>
+                        </div>
+                        <div id="paypal-button-container-12mo"></div>
+                    </div>
+                </div> <!-- End premiumPlansSection -->
+
+                <div id="premiumPromoSection" style="display: none; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+                    <div class="form-group">
+                        <label data-i18n="promo_code">Promo Code</label>
+                        <input type="text" id="promoCode" data-i18n-placeholder="enter_promo" placeholder="Enter promo code" style="padding: 14px; border-radius: 8px;">
+                    </div>
+                    <button class="btn-premium" onclick="activatePremium()" data-i18n="activate_premium" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #000; border-radius: 100px; font-size: 1.05rem; padding: 14px;">Activate Premium</button>
+                </div>
+            </div> <!-- End outer background container -->
+        </div>
+    </div>
+
+    <!-- PRE-BROADCAST DONATION MODAL -->
+    <div class="modal" id="preBroadcastModal">
+        <div class="modal-content" style="text-align: center; max-width: 460px;">
+            <button class="modal-close" onclick="skipDonationAndStart()" aria-label="Close modal">&times;</button>
+            
+            <h2 style="font-size: 1.5rem; margin-bottom: 15px; color: #fff;" data-i18n="pre_broadcast_title">Free Session (15 min)</h2>
+            <p style="color: var(--fg-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 20px;" data-i18n="pre_broadcast_desc">
+                To cover our server costs and keep the platform self-sustaining, free sessions are limited to 15 minutes. Subscribe to Premium for unlimited streaming!
+            </p>
+            
+            <div style="background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                <div style="font-size: 0.8rem; color: #ffd700; margin-bottom: 5px; font-weight: 700;" data-i18n="premium_plans_short">Premium Plans:</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: #fff; font-weight: 700;">$9.99/mo &middot; $24/3mo (7d free) &middot; $72/12mo (7d free)</div>
+            </div>
+
+            <button class="btn-premium" onclick="document.getElementById('preBroadcastModal').classList.remove('show'); showPremiumModal();" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #000; border-radius: 100px; font-size: 1.05rem; padding: 14px; width: 100%; margin-bottom: 20px; font-weight: 700; border: none; cursor: pointer;" data-i18n="get_premium_btn">Get Premium -- Unlimited Streaming (First 7 days free)</button>
+            
+            <button class="link-btn" onclick="skipDonationAndStart()" style="color: var(--fg-dim); font-size: 0.9rem; text-decoration: underline; background: none; border: none; cursor: pointer;" data-i18n="start_free_session">Start Free Session (15 min)</button>
+        </div>
+    </div>
+
+    <!-- SESSION EXPIRED MODAL -->
+    <div class="modal" id="sessionExpiredModal">
+        <div class="modal-content" style="text-align: center; max-width: 450px;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 15px; color: #fff;" data-i18n="session_expired_title">Free session ended</h2>
+            <p style="color: var(--fg-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 10px;" data-i18n="session_expired_desc">
+                Your free 15-minute session has ended. Subscribe to Premium for unlimited streaming and support the project.
+            </p>
+            
+            <div style="background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); border-radius: 12px; padding: 15px; margin: 20px 0;">
+                <div style="font-size: 0.85rem; color: #ffd700; margin-bottom: 10px; font-weight: 600;" data-i18n="session_expired_plans">Premium plans:</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: #fff; font-weight: 700;">$9.99/mo &middot; $24/3mo (7d free) &middot; $72/year (7d free)</div>
+            </div>
+
+            <button class="btn-premium" onclick="closeSessionExpiredModal(); showPremiumModal();" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #000; border-radius: 100px; font-size: 1.05rem; padding: 14px; width: 100%; margin-bottom: 15px; font-weight: 700;" data-i18n="session_expired_subscribe">Get Premium -- Unlimited Streaming (First 7 days free)</button>
+            
+            <button class="link-btn" onclick="reconnectAfterExpiry()" style="color: var(--fg-dim); font-size: 0.9rem; cursor: pointer; background: none; border: none; text-decoration: underline;" data-i18n="session_expired_reconnect">Or create a new room (15 min again)</button>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="legal-disclaimer">
+                <p><strong>Disclaimer:</strong> All content streamed via this platform is the sole responsibility of the
+                    user. Audio Streamer does not monitor, collect, or store any audio data streamed. We do not store
+                    sensitive user information beyond what is strictly necessary for registration and authentication.
+                </p>
+            </div>
+            <div class="footer-bottom">
+                <div class="made-by">
+                    Made by <a href="https://t.me/theflowski" target="_blank" rel="noopener">LANC Agency</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- WebRTC Adapter for Safari/Firefox support -->
+    <footer
+        style="margin-top: 40px; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.8rem; color: var(--fg-dim);">
+        <p style="margin-bottom: 10px; color: var(--fg-dim); font-weight: 500;" data-i18n="support_contact">Support: alisher@title.kz or Telegram @theflowski</p>
+        <p>&copy; 2026 Audio Streamer. All rights reserved.</p>
+        <div style="margin-top: 10px;">
+            <a href="#" onclick="openModal('privacyModal'); return false;"
+                style="color: var(--fg-dim); text-decoration: none; margin: 0 10px;" data-i18n="privacy_policy">Privacy
+                Policy</a>
+            <a href="#" onclick="openModal('termsModal'); return false;"
+                style="color: var(--fg-dim); text-decoration: none; margin: 0 10px;" data-i18n="terms_of_service">Terms
+                of Service</a>
+        </div>
+    </footer>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2 data-i18n="privacy_policy">Privacy Policy</h2>
+                <button class="close-btn" onclick="closeModal('privacyModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="privacyContent"
+                style="text-align: left; line-height: 1.6; white-space: pre-wrap;">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2 data-i18n="terms_of_service">Terms of Service</h2>
+                <button class="close-btn" onclick="closeModal('termsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="termsContent"
+                style="text-align: left; line-height: 1.6; white-space: pre-wrap;">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <!-- PROFILE MODAL -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content" style="max-width: 650px; text-align: center;">
+            <button class="modal-close" onclick="closeModal('profileModal')" aria-label="Close modal">&times;</button>
+            <h2 data-i18n="account_title" style="margin-bottom: 10px;">Personal Account</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 15px 0; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.05);">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 5px;">Email</label>
+                    <div id="profileEmail" style="font-weight: 600; color: #fff; word-break: break-all;">-</div>
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 5px;">Status</label>
+                    <div id="profileStatus" style="font-weight: 700; color: #ffd700;">-</div>
+                </div>
+
+                <div id="premiumExpiryContainer" style="display: none;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 5px;">Expires At</label>
+                    <div id="profileExpiry" style="font-weight: 600; color: #fff;">-</div>
+                </div>
+            </div>
+
+            <!-- Permanent Rooms Section (Only for Premium Users) -->
+            <div id="profileRoomsSection" style="display: none; margin: 20px 0; text-align: left; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 1.1rem; color: #ffd700; margin: 0;" data-i18n="my_permanent_rooms">My Permanent Rooms</h3>
+                    <button class="btn-primary" onclick="openCreateRoomForm()" style="width: auto; padding: 6px 14px; font-size: 0.85rem; border-radius: 6px;" data-i18n="create_room_btn">+ Create Room</button>
+                </div>
+                
+                <!-- Room Create Form (Initially hidden) -->
+                <div id="createRoomForm" style="display: none; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.2); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 4px;">Permanent Room ID (Alphanumeric, max 12 chars)</label>
+                        <input type="text" id="newRoomId" placeholder="e.g. MYSTREAM1" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;" maxlength="12">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 4px;">Display Name (Optional)</label>
+                        <input type="text" id="newRoomName" placeholder="e.g. Live Podcast" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;" maxlength="50">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 4px;">Room Password (Optional)</label>
+                        <input type="password" id="newRoomPassword" placeholder="Leave blank for public room" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;">
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button class="btn-secondary" onclick="document.getElementById('createRoomForm').style.display='none'" style="width: auto; padding: 6px 12px; font-size: 0.85rem;">Cancel</button>
+                        <button class="btn-primary" onclick="submitCreateRoom()" style="width: auto; padding: 6px 12px; font-size: 0.85rem;">Save</button>
+                    </div>
+                </div>
+
+                <!-- Rooms List Container -->
+                <div id="roomsListContainer">
+                    <div style="text-align: center; color: var(--fg-dim); font-size: 0.9rem; padding: 10px;" data-i18n="loading_rooms">Loading rooms...</div>
+                </div>
+            </div>
+
+            <button class="btn-premium" id="btnProfilePremium" onclick="closeModal('profileModal'); showPremiumModal();" style="display: none; background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #000; margin-bottom: 15px; border-radius: 100px; width: 100%; border: none; padding: 12px; font-weight: 700;">Upgrade to Premium (First 7 days free)</button>
+            
+            <button class="btn-secondary" onclick="logout()" style="width: 100%; border-radius: 100px; padding: 12px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);">Logout</button>
+        </div>
+    </div>
+
+    <!-- EDIT ROOM MODAL -->
+    <div class="modal" id="editRoomModal">
+        <div class="modal-content" style="max-width: 400px; text-align: left;">
+            <button class="modal-close" onclick="closeModal('editRoomModal')" aria-label="Close modal">&times;</button>
+            <h3 style="color: #ffd700; margin-bottom: 15px;" data-i18n="edit_room_title">Edit Room Settings</h3>
+            <input type="hidden" id="editRoomDbId">
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 4px;">Permanent Room ID</label>
+                <input type="text" id="editRoomCode" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #111; color: #888;" disabled>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 4px;">Display Name</label>
+                <input type="text" id="editRoomName" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;" maxlength="50">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 0.8rem; color: var(--fg-dim); margin-bottom: 4px;">New Password (Optional)</label>
+                <input type="password" id="editRoomPassword" placeholder="Leave blank to keep current, or enter new" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;">
+                <div style="font-size: 0.75rem; color: var(--fg-dim); margin-top: 6px;"><label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" id="clearRoomPassword"> Remove password protection</label></div>
+            </div>
+            <button class="btn-primary" onclick="submitEditRoom()" style="width: 100%; padding: 10px; border-radius: 6px;">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/adapterjs/0.15.5/adapter.min.js"></script>
+    <script src="script.js?v=6"></script>
+	<!-- Yandex.RTB R-A-19073620-2 -->
+<div id="yandex_rtb_R-A-19073620-2"></div>
+<script>
+window.yaContextCb.push(() => {
+    Ya.Context.AdvManager.render({
+        "blockId": "R-A-19073620-2",
+        "renderTo": "yandex_rtb_R-A-19073620-2"
+    })
+})
+</script>
+
+<script>
+    function initPayPalButton(containerId, planId) {
+        paypal.Buttons({
+            style: {
+                shape: 'pill',
+                color: 'gold',
+                layout: 'vertical',
+                label: 'subscribe'
+            },
+            createSubscription: function(data, actions) {
+                const uid = localStorage.getItem('userId');
+                if (!uid) {
+                    showNotification(currentLang === 'ru' ? 'Ошибка: Вы не авторизованы' : 'Error: You are not authorized');
+                    return actions.reject();
+                }
+                return actions.subscription.create({
+                    'plan_id': planId,
+                    'custom_id': 'audio_' + uid
+                });
+            },
+            onApprove: function(data, actions) {
+                showNotification('Subscription successful! Processing...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            }
+        }).render(containerId);
+    }
+
+    // Initialize PayPal buttons when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof paypal !== 'undefined') {
+            initPayPalButton('#paypal-button-container-1mo', 'YOUR_PAYPAL_PLAN_ID_1MO');
+            initPayPalButton('#paypal-button-container-3mo', 'YOUR_PAYPAL_PLAN_ID_3MO');
+            initPayPalButton('#paypal-button-container-12mo', 'YOUR_PAYPAL_PLAN_ID_12MO');
+        }
+    });
+</script>
+
+</body>
+
+</html>

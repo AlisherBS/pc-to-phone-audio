@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Audio Streamer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+            border-right: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 20px;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #58a6ff;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 12px 15px;
+            color: #8b949e;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .header {
+            background: #161b22;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            color: #c9d1d9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #161b22;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+        }
+
+        .stat-card h3 {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #58a6ff;
+        }
+
+        .stat-card .change {
+            font-size: 14px;
+            color: #3fb950;
+            margin-top: 5px;
+        }
+
+        .card {
+            background: #161b22;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #c9d1d9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #30363d;
+        }
+
+        table th {
+            background: #0d1117;
+            font-weight: 600;
+            color: #8b949e;
+        }
+
+        table tr:hover {
+            background: #21262d;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.premium {
+            background: rgba(210, 153, 34, 0.2);
+            color: #d29922;
+        }
+
+        .badge.free {
+            background: rgba(63, 185, 80, 0.2);
+            color: #3fb950;
+        }
+
+        .badge.active {
+            background: rgba(63, 185, 80, 0.2);
+            color: #3fb950;
+        }
+
+        .badge.inactive {
+            background: rgba(248, 81, 73, 0.2);
+            color: #f85149;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ea043;
+        }
+
+        .btn-danger {
+            background: #da3633;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #f85149;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-right: 10px;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #161b22;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #30363d;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h2 {
+            color: #c9d1d9;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #8b949e;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            margin: 0;
+        }
+
+        .event-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            padding: 10px;
+            border-left: 3px solid #58a6ff;
+            background: #0d1117;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .event-item .time {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8b949e;
+        }
+
+        .error-message {
+            color: #f85149;
+            padding: 10px;
+            background: rgba(248, 81, 73, 0.1);
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 40px;
+            width: 380px;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-box .login-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+        }
+
+        .login-box h2 {
+            color: #e6edf3;
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .login-box .login-subtitle {
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-bottom: 28px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #c9d1d9;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-box input:focus {
+            border-color: #58a6ff;
+        }
+
+        .login-box input::placeholder {
+            color: #484f58;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #238636;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 4px;
+        }
+
+        .login-box button:hover {
+            background: #2ea043;
+        }
+
+        .login-error {
+            color: #f85149;
+            font-size: 0.85rem;
+            margin-top: 16px;
+            padding: 10px;
+            background: rgba(248, 81, 73, 0.08);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Overlay -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <div class="login-icon">&#128274;</div>
+            <h2>Admin Panel</h2>
+            <p class="login-subtitle">Audio Streamer Dashboard</p>
+            <input type="text" id="adminUsername" placeholder="Username" autocomplete="username">
+            <input type="password" id="adminPasswordInput" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
+            <button onclick="handleLogin()">Sign In</button>
+            <div id="loginError" class="login-error">Invalid credentials</div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h1>Admin Panel</h1>
+        <nav>
+            <a href="#" class="active" data-page="dashboard">Dashboard</a>
+            <a href="#" data-page="rooms">Rooms</a>
+            <a href="#" data-page="users">Users</a>
+
+            <a href="#" data-page="promo">Promo Codes</a>
+            <a href="#" data-page="events">Event Log</a>
+            <a href="#" data-page="settings">Settings</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2 id="pageTitle">Dashboard</h2>
+            <div>
+                <button class="btn-primary" onclick="refreshData()">Refresh</button>
+                <button class="btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard" class="page">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <div class="value" id="totalUsers">0</div>
+                    <div class="change">+12% this month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Rooms</h3>
+                    <div class="value" id="activeRooms">0</div>
+                    <div class="change">Currently online</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Connections</h3>
+                    <div class="value" id="totalConnections">0</div>
+                    <div class="change">All time</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Premium Users</h3>
+                    <div class="value" id="premiumUsers">0</div>
+                    <div class="change" id="premiumActivations">0 activations</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Recent Events</h2>
+                <div class="event-log" id="recentEvents">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROOMS PAGE -->
+        <div id="rooms" class="page" style="display: none;">
+            <div class="card">
+                <h2>Active Rooms</h2>
+                <table id="roomsTable">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Type</th>
+                            <th>Receivers</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" class="loading">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- USERS PAGE -->
+        <div id="users" class="page" style="display: none;">
+            <div class="card">
+                <h2>Registered Users</h2>
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="userSearchInput" placeholder="Search by email..." style="flex: 1;">
+                    <button class="btn-primary" onclick="loadUsers()">Search</button>
+                </div>
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>User ID</th>
+                            <th>Plan</th>
+                            <th>Subscription ID</th>
+                            <th>Expires</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="loading">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PROMO PAGE -->
+        <div id="promo" class="page" style="display: none;">
+            <div class="card">
+                <h2>Create Promo Code</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <select id="promoDuration">
+                        <option value="2592000000">30 days</option>
+                        <option value="7776000000">90 days</option>
+                        <option value="31536000000">1 year</option>
+                    </select>
+                    <input type="number" id="promoMaxUses" placeholder="Max uses" value="100">
+                    <button class="btn-primary" onclick="createPromo()">Create Promo</button>
+                </div>
+                <div id="promoResult"></div>
+            </div>
+
+            <div class="card">
+                <h2>Active Promo Codes</h2>
+                <table id="promoTable">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Duration</th>
+                            <th>Uses</th>
+                            <th>Max Uses</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5">No promo codes yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+        <!-- EVENTS PAGE -->
+        <div id="events" class="page" style="display: none;">
+            <div class="card">
+                <h2>Event Log</h2>
+                <div class="event-log" id="eventLog">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS PAGE -->
+        <div id="settings" class="page" style="display: none;">
+            <div class="card">
+                <h2>System Settings</h2>
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="adminPassword" placeholder="Current admin password">
+                </div>
+                <div class="form-group">
+                    <label>Max Free Receivers</label>
+                    <input type="number" value="1" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Max Premium Receivers</label>
+                    <input type="number" value="4" disabled>
+                </div>
+                <button class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        let adminToken = localStorage.getItem('adminToken');
+
+        // Check if already logged in
+        if (adminToken) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            loadDashboard();
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPasswordInput').value;
+            const errorEl = document.getElementById('loginError');
+
+            try {
+                const res = await fetch('/api/auth/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    loadDashboard();
+                } else {
+                    errorEl.style.display = 'block';
+                }
+            } catch (e) {
+                console.error('Login error:', e);
+                errorEl.textContent = 'Server connection error';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.reload();
+        }
+
+        function showPage(pageId) {
+            // Updated for navigation
+        }
+
+        // Navigation
+        document.querySelectorAll('.sidebar nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+
+                document.querySelectorAll('.sidebar nav a').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                document.getElementById(page).style.display = 'block';
+
+                const titles = {
+                    dashboard: 'Dashboard',
+                    rooms: 'Active Rooms',
+                    users: 'Users',
+                    promo: 'Promo Codes',
+                    events: 'Event Log',
+                    settings: 'Settings'
+                };
+                document.getElementById('pageTitle').textContent = titles[page];
+
+                if (page === 'dashboard') loadDashboard();
+                if (page === 'rooms') loadRooms();
+                if (page === 'users') loadUsers();
+
+                if (page === 'promo') loadPromos();
+                if (page === 'events') loadEvents();
+            });
+        });
+
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/api/admin/analytics', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                // Handle non-OK responses
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        alert('Unauthorized');
+                        logout();
+                        return;
+                    }
+                    if (res.status === 429) {
+                        document.getElementById('recentEvents').innerHTML = '<div class="error-message">Too many requests. Please wait a moment.</div>';
+                        return;
+                    }
+                    document.getElementById('recentEvents').innerHTML = '<div class="error-message">Error: ' + res.status + '</div>';
+                    return;
+                }
+
+                const data = await res.json();
+
+                document.getElementById('totalUsers').textContent = data.totalUsers || 0;
+                document.getElementById('activeRooms').textContent = data.activeRooms || 0;
+                document.getElementById('totalConnections').textContent = data.totalConnections || 0;
+                document.getElementById('premiumUsers').textContent = '0';
+                document.getElementById('premiumActivations').textContent = `${data.premiumActivations || 0} activations`;
+
+                // Recent events - with null check
+                const recentEvents = data.recentEvents || [];
+                if (recentEvents.length === 0) {
+                    document.getElementById('recentEvents').innerHTML = '<div class="loading">No events yet</div>';
+                    return;
+                }
+
+                const eventsHtml = recentEvents.slice(0, 10).map(event => `
+            <div class="event-item">
+                <div class="time">${new Date(event.timestamp).toLocaleString()}</div>
+                <div><strong>${event.event}</strong></div>
+                <div>${JSON.stringify(event.data)}</div>
+            </div>
+        `).join('');
+
+                document.getElementById('recentEvents').innerHTML = eventsHtml;
+            } catch (e) {
+                console.error('Load dashboard error:', e);
+                document.getElementById('recentEvents').innerHTML = '<div class="error-message">Error loading data</div>';
+            }
+        }
+
+        // Load Rooms
+        async function loadRooms() {
+            try {
+                const res = await fetch('/api/admin/rooms', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                const tbody = document.querySelector('#roomsTable tbody');
+
+                // Handle non-OK responses
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        alert('Unauthorized');
+                        logout();
+                        return;
+                    }
+                    if (res.status === 429) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="loading">Too many requests. Please wait.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = '<tr><td colspan="6" class="loading">Error: ' + res.status + '</td></tr>';
+                    return;
+                }
+
+                const data = await res.json();
+
+                // Null check for rooms
+                const rooms = data.rooms || [];
+
+                if (rooms.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="loading">No active rooms</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = rooms.map(room => `
+            <tr>
+                <td><strong>${room.id}</strong></td>
+                <td><span class="badge ${room.isPremium ? 'premium' : 'free'}">${room.isPremium ? 'Premium' : 'Free'}</span></td>
+                <td>${(room.receivers || []).length} / ${room.maxReceivers || 1}</td>
+                <td>${new Date(room.createdAt).toLocaleString()}</td>
+                <td><span class="badge active">Active</span></td>
+                <td><button class="btn-danger" onclick="deleteRoom('${room.id}')">Delete</button></td>
+            </tr>
+        `).join('');
+            } catch (e) {
+                console.error('Load rooms error:', e);
+            }
+        }
+
+        // Load Users
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                const tbody = document.querySelector('#usersTable tbody');
+
+                // Handle non-OK responses
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        alert('Unauthorized');
+                        logout();
+                        return;
+                    }
+                    if (res.status === 429) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="loading">Too many requests. Please wait.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = '<tr><td colspan="7" class="loading">Error: ' + res.status + '</td></tr>';
+                    return;
+                }
+
+                const data = await res.json();
+
+                // Null check for users
+                let users = data.users || [];
+
+                // Filter by search
+                const searchQuery = (document.getElementById('userSearchInput').value || '').toLowerCase().trim();
+                if (searchQuery) {
+                    users = users.filter(u => u.email.toLowerCase().includes(searchQuery));
+                }
+
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="loading">No users found</td></tr>';
+                    return;
+                }
+
+                // Sort: premium first, then by date
+                users.sort((a, b) => {
+                    if (a.isPremium && !b.isPremium) return -1;
+                    if (!a.isPremium && b.isPremium) return 1;
+                    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+                });
+
+                tbody.innerHTML = users.map(user => {
+                    const expiresAt = user.premiumExpiresAt ? new Date(user.premiumExpiresAt) : null;
+                    const isExpired = expiresAt && expiresAt < new Date();
+                    const expiresStr = expiresAt 
+                        ? `<span style="color: ${isExpired ? '#f85149' : '#3fb950'}">${expiresAt.toLocaleDateString()} ${expiresAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>${isExpired ? ' <span style="color:#f85149;font-size:11px;">(expired)</span>' : ''}`
+                        : '<span style="color:#8b949e;">-</span>';
+                    const subId = user.subscriptionId 
+                        ? `<code style="font-size:11px;background:#21262d;padding:2px 6px;border-radius:4px;">${user.subscriptionId.substring(0, 16)}...</code>` 
+                        : '-';
+
+                    return `
+                    <tr>
+                        <td><strong>${user.email}</strong></td>
+                        <td style="font-size:12px;">${user.userId || '-'}</td>
+                        <td><span class="badge ${user.isPremium ? 'premium' : 'free'}">${user.isPremium ? 'Premium' : 'Free'}</span></td>
+                        <td>${subId}</td>
+                        <td>${expiresStr}</td>
+                        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+                        <td style="white-space: nowrap;">
+                            <button class="${user.isPremium ? 'btn-danger' : 'btn-primary'}" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;" onclick="togglePremium('${user.email}', ${!user.isPremium})">
+                                ${user.isPremium ? 'Revoke' : 'Grant'}
+                            </button>
+                            <button class="btn-primary" style="padding: 5px 10px; font-size: 12px; background: #58a6ff;" onclick="setSubscriptionExpiry('${user.email}')">
+                                Set Expiry
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            } catch (e) {
+                console.error('Load users error:', e);
+            }
+        }
+
+        // Toggle Premium for a user
+        async function togglePremium(email, newStatus) {
+            const action = newStatus ? 'Grant Premium to' : 'Revoke Premium from';
+            if (!confirm(`${action} ${email}?`)) return;
+
+            try {
+                let body = { isPremium: newStatus };
+                
+                // If granting premium, set a default 30-day expiry
+                if (newStatus) {
+                    const expiry = new Date();
+                    expiry.setDate(expiry.getDate() + 30);
+                    body.premiumExpiresAt = expiry.toISOString();
+                } else {
+                    body.premiumExpiresAt = null;
+                    body.subscriptionId = null;
+                }
+
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}/subscription`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || res.status));
+                    return;
+                }
+
+                alert(`Premium ${newStatus ? 'granted' : 'revoked'} for ${email}`);
+                loadUsers();
+            } catch (e) {
+                console.error('Toggle premium error:', e);
+                alert('Error updating user');
+            }
+        }
+
+        // Set Subscription Expiry Date
+        async function setSubscriptionExpiry(email) {
+            const dateStr = prompt(`Set subscription expiry for ${email}\n\nFormat: YYYY-MM-DD (e.g. 2026-06-12)\nLeave empty to remove expiry.`);
+            
+            if (dateStr === null) return; // cancelled
+
+            try {
+                let body = {};
+                
+                if (dateStr.trim() === '') {
+                    body.premiumExpiresAt = null;
+                } else {
+                    const date = new Date(dateStr.trim());
+                    if (isNaN(date.getTime())) {
+                        alert('Invalid date format. Use YYYY-MM-DD.');
+                        return;
+                    }
+                    date.setHours(23, 59, 59, 999);
+                    body.isPremium = true;
+                    body.premiumExpiresAt = date.toISOString();
+                }
+
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}/subscription`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || res.status));
+                    return;
+                }
+
+                alert(`Expiry updated for ${email}`);
+                loadUsers();
+            } catch (e) {
+                console.error('Set expiry error:', e);
+                alert('Error updating expiry');
+            }
+        }
+
+        // Load Events
+        async function loadEvents() {
+            try {
+                const res = await fetch('/api/admin/analytics', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                // Handle non-OK responses
+                if (!res.ok) {
+                    if (res.status === 429) {
+                        document.getElementById('eventLog').innerHTML = '<div class="error-message">Too many requests. Please wait.</div>';
+                        return;
+                    }
+                    document.getElementById('eventLog').innerHTML = '<div class="error-message">Error: ' + res.status + '</div>';
+                    return;
+                }
+
+                const data = await res.json();
+
+                // Null check for recentEvents
+                const recentEvents = data.recentEvents || [];
+
+                if (recentEvents.length === 0) {
+                    document.getElementById('eventLog').innerHTML = '<div class="loading">No events</div>';
+                    return;
+                }
+
+                const eventsHtml = recentEvents.map(event => `
+            <div class="event-item">
+                <div class="time">${new Date(event.timestamp).toLocaleString()}</div>
+                <div><strong>${event.event}</strong></div>
+                <div style="font-size: 12px; color: #8b949e;">${JSON.stringify(event.data)}</div>
+            </div>
+        `).join('');
+
+                document.getElementById('eventLog').innerHTML = eventsHtml;
+            } catch (e) {
+                console.error('Load events error:', e);
+            }
+        }
+
+
+        // Create Promo
+        async function createPromo() {
+            try {
+                const duration = parseInt(document.getElementById('promoDuration').value);
+                const maxUses = parseInt(document.getElementById('promoMaxUses').value);
+
+                const res = await fetch('/api/admin/promo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({
+                        duration,
+                        maxUses
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.status === 401) {
+                    alert('Unauthorized');
+                    logout();
+                    return;
+                }
+
+                document.getElementById('promoResult').innerHTML = `
+            <div class="stat-card" style="margin-top: 20px;">
+                <h3>Promo Code Created!</h3>
+                <div style="font-size: 24px; font-weight: bold; color: #58a6ff; margin: 10px 0;">${data.code}</div>
+                <div>Duration: ${Math.round(duration / 86400000)} days | Max uses: ${maxUses}</div>
+            </div>
+        `;
+            } catch (e) {
+                console.error('Create promo error:', e);
+                alert('Error creating promo code');
+            }
+        }
+
+        function refreshData() {
+            loadDashboard();
+        }
+
+        // Load Promos
+        async function loadPromos() {
+            try {
+                const res = await fetch('/api/admin/promos', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const tbody = document.querySelector('#promoTable tbody');
+
+                if (!res.ok) {
+                    tbody.innerHTML = '<tr><td colspan="5">Error loading promos</td></tr>';
+                    return;
+                }
+
+                const data = await res.json();
+                const promos = data.promos || [];
+
+                if (promos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">No promo codes found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = promos.map(promo => `
+                    <tr>
+                        <td><code style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px;">${promo.code}</code></td>
+                        <td>${Math.round(promo.duration / 86400000)} days</td>
+                        <td>${promo.uses}</td>
+                        <td>${promo.maxUses}</td>
+                        <td>${new Date(promo.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error('Load promos error:', e);
+            }
+        }
+
+        function deleteRoom(roomId) {
+            if (confirm(`Delete room ${roomId}?`)) {
+                alert('Room deletion not yet implemented');
+            }
+        }
+
+        // Auto-refresh (every 60 seconds)
+        setInterval(() => {
+            const activePage = document.querySelector('.sidebar nav a.active').dataset.page;
+            if (activePage === 'dashboard') loadDashboard();
+            if (activePage === 'rooms') loadRooms();
+        }, 60000);
+    </script>
+
+</body>
+
+</html>

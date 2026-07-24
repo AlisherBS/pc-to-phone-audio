@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 320px;
+            min-height: 450px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #58a6ff;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 10px;
+        }
+
+        .room-id {
+            font-size: 28px;
+            font-weight: bold;
+            color: #58a6ff;
+            text-align: center;
+            letter-spacing: 3px;
+            padding: 10px;
+            background: #0d1117;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: all;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: #da3633;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #30363d;
+            color: #c9d1d9;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .status.connected {
+            background: rgba(63, 185, 80, 0.2);
+            color: #3fb950;
+        }
+
+        .status.disconnected {
+            background: rgba(248, 81, 73, 0.2);
+            color: #f85149;
+        }
+
+        .status.streaming {
+            background: rgba(88, 166, 255, 0.2);
+            color: #58a6ff;
+        }
+
+        .info {
+            font-size: 12px;
+            color: #8b949e;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .visualizer {
+            height: 50px;
+            background: #0d1117;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 5px;
+            gap: 2px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #238636, #58a6ff);
+            border-radius: 2px;
+            min-height: 3px;
+            transition: height 0.05s;
+        }
+
+        .receivers {
+            text-align: center;
+            font-size: 24px;
+            color: #58a6ff;
+            margin: 10px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        #qrcode-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            min-height: 148px;
+            /* 128px QR + padding */
+        }
+
+        .tab-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #8b949e;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .tab-title {
+            color: #c9d1d9;
+            font-weight: 600;
+            display: block;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        details {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Audio Streamer</h1>
+
+    <div id="statusBar" class="status disconnected">Not connected</div>
+
+    <!-- Initial State -->
+    <div id="startView">
+        <div style="text-align: center; margin-bottom: 20px; color: #8b949e; font-size: 14px;">
+            Open this extension on the tab you want to stream.
+        </div>
+
+        <button class="btn-primary" id="btnStart">Start Streaming</button>
+
+        <!-- Hidden Advanced Settings -->
+        <details>
+            <summary>Advanced Settings</summary>
+            <div class="card" style="margin-top: 10px;">
+                <h3>Server</h3>
+                <input type="text" id="serverUrl" value="ws://localhost:8080/ws" placeholder="ws://localhost:8080/ws">
+            </div>
+        </details>
+    </div>
+
+    <!-- Streaming State -->
+    <div id="streamingView" class="hidden">
+        <div class="card">
+            <div class="tab-info">
+                Streaming from:
+                <span class="tab-title" id="tabTitle">...</span>
+            </div>
+
+            <h3>Room ID (click to copy)</h3>
+            <div class="room-id" id="roomId" title="Click to copy">------</div>
+
+            <div id="qrcode-container">
+                <div id="qrcode"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Connected Receivers</h3>
+            <div class="receivers"><span id="receiverCount">0</span></div>
+        </div>
+
+        <div class="card">
+            <h3>Audio Level</h3>
+            <div class="visualizer" id="visualizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+
+        <button class="btn-danger" id="btnStop">Stop Streaming</button>
+    </div>
+
+    <script src="qrcode.min.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>
